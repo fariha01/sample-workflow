@@ -39,6 +39,10 @@ jobs:
         run: |
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+          aws lambda update-function-code \
+            # add your function name here
+            --function-name myfunctionname \
+            --image-uri $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
 
 
