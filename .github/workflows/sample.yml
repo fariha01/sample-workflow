@@ -1,14 +1,56 @@
-name: shell commands
+# name: shell commands
 
+# on: [push]
+
+# jobs:
+#   run-shell-commands:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: string
+#         run: echo "Welcome to Development"
+#       - name: multiline script
+#         run: |
+#           node -v
+#           npm -v
+
+name: ecr_docker_deployment
 on: [push]
-
 jobs:
-  run-shell-commands:
+  docker_cicd:
     runs-on: ubuntu-latest
     steps:
-      - name: string
-        run: echo "Welcome to Development"
-      - name: multiline script
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: 
+          aws-secret-access-key:
+          aws-region:
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          #enter name of your repository
+          REPOSITORY: my-ecr-repo
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          node -v
-          npm -v
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
